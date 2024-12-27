@@ -1,6 +1,5 @@
 import tkinter as tk
-# from tkinter import  ttk
-import ttkbootstrap as ttk
+from tkinter import  ttk
 
 def button_press():
           # print(entry.get())
