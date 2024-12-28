@@ -1,7 +1,4 @@
 import psycopg2
-import tabulate
-import pyperclip as clip
-import argparse
 from cryptography.fernet import Fernet, InvalidToken
 
 
