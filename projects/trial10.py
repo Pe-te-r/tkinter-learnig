@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Frame, Frame, ttk
+from tkinter import  ttk
 
 window = tk.Tk()
 window.title('frames and parenting')
