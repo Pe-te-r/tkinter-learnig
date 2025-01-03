@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk,font
 
 current_player = 'X'
 
@@ -14,19 +14,24 @@ class App(tk.Tk):
           def __init__(self, title, size):
                     super().__init__()
                     self.geometry(f"{size[0]}x{size[1]}")
+                    print(font.families())
                     self.minsize(size[0], size[1])
                     self.title(title)
                     # style
                     self.style = ttk.Style()
                     # self.style.theme_use("alt")
-                    self.style.configure("X.TButton", background="green", font=("", 20))
+                    self.style.configure("X.TButton", background="grey", font=("", 20))
                     self.style.configure("win.TButton", background="blue", font=("", 20))
                     self.style.configure("over.TButton", background="red",font=('',20))
                     # layout
-                    self.frame=ttk.Frame(self)
+                    self.main_layout = ttk.Frame(self)
+                    # SidePanel(self.main_layout,self.style)
+                    self.frame=ttk.Frame(self.main_layout)
                     self.frame.columnconfigure((0, 1, 2), weight=1, uniform="a")
                     self.frame.rowconfigure((0, 1, 2), weight=1, uniform="a")
-                    self.frame.pack(expand=True,fill='both')
+                    self.frame.place(relx=0,relwidth=1,relheight=1)
+                    self.main_layout.pack(expand=True,fill='both')
+
                     self.squares = []
                     self.add_squares()
                     # attributes
@@ -60,6 +65,20 @@ class App(tk.Tk):
                     square8.grid(column=1, row=2, padx=10, pady=10, sticky="news")
                     square9.grid(column=2, row=2, padx=10, pady=10, sticky="news")
 
+
+# class SidePanel(ttk.Frame):
+#     def __init__(self,parent,style):
+#         super().__init__(parent)
+#         self.style = style
+#         self.columnconfigure((0),weight=1,uniform='a')
+#         self.rowconfigure((0,1,2),weight=1,uniform='a')
+#         self.style.configure('Label.TFrame',background='green')
+#         self.style.configure('Btn.TButton',background='brown',foreground = 'black',font=('Cantarell',20))
+#         ttk.Button(self,text='New game',style='Btn.TButton').grid(row=0,column=0,padx=10,pady=10)
+#         ttk.Button(self,text='ScoreBoard',style='Btn.TButton').grid(row=1,column=0,padx=10,pady=10)
+#         ttk.Button(self,text='About',style='Btn.TButton').grid(row=2,column=0,padx=10,pady=10)
+#         self['style'] = 'Label.TFrame'
+#         self.place(relwidth=.3,x=0,relheight=1)
 
 
 class Square(ttk.Frame):
