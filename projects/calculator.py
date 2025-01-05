@@ -104,7 +104,6 @@ class ButtonCalc(ttk.Frame):
         self.style.map('TButton',background=[('hover','#ffe192')])
         self.funt = funct
         ttk.Button(self,text=button_text,command=self.handle_click  ).pack(fill='both',expand=True)
-    
     def handle_click(self):
         value = self.input.entry_value.get()
         value += self.button_text 
