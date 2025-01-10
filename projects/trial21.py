@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk,font
+from tkinter import ttk
 
 class App(tk.Tk):
     def __init__(self,title,size):
@@ -8,7 +8,6 @@ class App(tk.Tk):
         self.geometry('500x600')
         self.title(title)
         self.minsize(size[0],size[1])
-        print(font.families())
 
         # 
         self.style = ttk.Style()
@@ -51,17 +50,28 @@ class MainPanel(ttk.Frame):
     def body(self):
         self.style.configure('TButton',background='green',foreground='white')
         self.style.map('TButton',background=[('hover','blue')])
-        ttk.Label(self.frame, text="Login", font=("URW Gothic", 15,'bold')).pack(ipady=10)
-        self.input('username')
-        self.input('password')
-        ttk.Button(self.frame,text='submit').pack(pady=10)
-    def input(self, label_text):
+        self.username= tk.StringVar()
+        self.password= tk.StringVar()
+        ttk.Label(self.frame, text="Login", font=("Source Code Pro", 15,'bold')).pack(ipady=10)
+        self.input('username',self.username)
+        self.input('password',self.password)
+        ttk.Button(self.frame,text='submit',command=self.getInput).pack(pady=10)
+    def input(self, label_text,value):
         self.input_frame = ttk.Frame(self.frame)
         self.input_frame.pack()
-        ttk.Label(self.input_frame,text=label_text,font=('Arial',16,),justify='center').pack(side='left',pady=10,padx=10)
+        ttk.Label(self.input_frame,text=label_text,font=('FreeSerif',16,),justify='center').pack(side='left',pady=10,padx=10)
         self.input_frame.pack()
-        self.entry = ttk.Entry(self.input_frame)
+        self.entry = ttk.Entry(self.input_frame,textvariable=value)
         self.entry.pack(side='left',pady=10,padx=10)
+
+    def getInput(self):
+        # print(self.username.get(), self.password.get())
+        if self.username.get()=='peter' and self.password.get()=='wahu':
+            print('here')
+            self.frame.forget()
+            self.frame = ttk.Frame(self)
+            # ttk.Label(self.frame,background='white',text='welcome here').pack(expand=True,fill='both')
+            self.frame.pack(expand=True,fill='both')
 
 
 

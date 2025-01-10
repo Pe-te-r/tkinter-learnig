@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import ttk,font
+from tkinter import ttk
 
 class Calculator(tk.Tk):
     def __init__(self,title,size):
         super().__init__()
         self.title(title)
-        print(font.families())
+        # print(font.families())
         self.geometry(f'{size[0]}x{size[1]}')
         self.minsize(size[0],size[1])
         self.columnconfigure((0,1,2,3),weight=1,uniform='a')
