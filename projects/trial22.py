@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import  ttk
 from random import sample
 
 
@@ -10,30 +10,79 @@ class Window(tk.Tk):
         self.title(title)
         self.resizable(False, False)
         self.style = ttk.Style()
-        TopFrame(self, self.style)
-        SideFrame(self, self.style)
-        CenterFrame(self, self.style)
+        # data
+        self.exploded_mines=tk.IntVar()
+        self.mine_size=tk.IntVar(value=6)
+        top_frame=TopFrame(self, self.style,self.mine_size)
+        SideFrame(self, self.style,self.mine_size,self.exploded_mines)
+        center_frame = CenterFrame(self, self.style, self.mine_size,self.exploded_mines)
+        top_frame.set_start_game(center_frame.add_cells)
         self.mainloop()
 
 
 class TopFrame(ttk.Frame):
-    def __init__(self, master, style):
-        style.configure("Top.TFrame", background="lightblue")
+    def __init__(self, master, style, mine_var):
+        style.configure("Top.TFrame", background="#2c3e50")  # Dark blue background
         super().__init__(master, style="Top.TFrame")
-        self.place(x=0, y=0, relwidth=1, relheight=0.2)
+        self.mine_var=mine_var
+        # Label for the slider
+        self.text_var=tk.StringVar(value=f'Adjust the number of mines { mine_var.get()} available')
+        ttk.Label(
+            self,
+            textvariable=self.text_var,
+            font=("Arial", 14),
+            foreground="white",
+            background="#2c3e50",
+        ).pack(expand=True, pady=10)
 
+        # Slider (ttk.Scale) to adjust the number of mines
+        self.slider = ttk.Scale(
+            self,
+            from_=5,  # Minimum value
+            to=10,  # Maximum value
+            length=5,
+            orient="horizontal",  # Horizontal orientation
+            variable=mine_var,  # Linked to the mine_var IntVar
+            command=self.reset_mine,  # Callback when the slider is moved
+        )
+        self.slider.place(
+            relx=.4,rely=.8,relwidth=.3
+        )  # Add padding and fill horizontally
+        mine_var.trace_add("write", lambda *args: self.text_var.set(f"There are {mine_var.get()} mines"))
+
+        # Place the frame
+        self.place(x=0, y=0, relwidth=1, relheight=0.2)
+        self.start_func = None
+
+    def set_start_game(self, func):
+        self.start_func = func
+
+    def reset_mine(self, *args):
+        # self.text_var.set()
+        print(self.mine_var.get())
+        if self.start_func is not None:
+            self.start_func()
 
 class SideFrame(ttk.Frame):
-    def __init__(self, master, style):
-        style.configure("Side.TFrame", background="blue")
+    def __init__(self, master, style, mine_var, exploded_mines):
+        style.configure("Side.TFrame", background="#34495e") 
         super().__init__(master=master, style="Side.TFrame")
+        self.string_var = tk.StringVar(self, value=f"There are {mine_var.get()}  mines")
+        ttk.Label(self,textvariable=self.string_var,font=("Arial", 14),foreground="white",background="#34495e",).pack(expand=True, pady=20)
+        exploded_mines.trace_add(
+            "write",
+            lambda *args: self.string_var.set(
+                f"Exploded mines: {exploded_mines.get()}"
+            ),
+        )
         self.place(x=0, rely=0.2, relwidth=0.3, relheight=1)
 
-
 class CenterFrame(ttk.Frame):
-    def __init__(self, master, style):
+    def __init__(self, master, style, mine_var, exploded_mines):
         self.style = style
-        self.style.configure("Center.TFrame", background="black")
+        self.exploded_mines=exploded_mines
+        self.mine_var=mine_var
+        style.configure("Center.TFrame", background="#2c3e50")
         super().__init__(master=master, style="Center.TFrame")
         self.place(rely=0.2, relx=0.3, relheight=0.8, relwidth=0.7)
         self.grid_size = 5
@@ -44,21 +93,24 @@ class CenterFrame(ttk.Frame):
 
     def add_cells(self):
         Cell.all=[]
+        self.exploded_mines.set(value=0)
         for row in range(self.grid_size):
             for col in range(self.grid_size):
-                cell = Cell(self, col, row, self.style)
+                cell = Cell(self, col, row, self.style,self. exploded_mines)
                 cell.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
-        Cell.randomize()
+        Cell.randomize(self.mine_var.get())
 
 
 class Cell(ttk.Button):
     all = []
 
-    def __init__(self, master, col, row, style, is_mine=False):
+    def __init__(self, master, col, row, style, exploded_mines, is_mine=False):
         super().__init__(master=master)
         self.col = col
         self.row = row
         self.style = style
+        self.exploded_mines = exploded_mines
+        self.is_clicked=False
         self.is_mine = is_mine
         # Configure the button to expand
         self.configure(style="TButton")
@@ -73,14 +125,17 @@ class Cell(ttk.Button):
 
     # When left clicked
     def left_click(self, event):
-        if self.is_mine:
-            self.show_mine_error()
-        else:
-            self.show_cell()
-            if self.mine_cell_number == 0:
-                cells = self.get_neighbour_cell
-                for cell in cells:
-                    cell.show_cell()
+        if self.is_clicked is not True:
+            if self.is_mine:
+                self.exploded_mines.set(int(self.exploded_mines.get()+1))
+                self.show_mine_error()
+            else:
+                self.show_cell()
+                if self.mine_cell_number == 0:
+                    cells = self.get_neighbour_cell
+                    for cell in cells:
+                        cell.show_cell()
+            self.is_clicked=True
 
     def show_cell(self):
         _ = self.get_neighbour_cell
@@ -112,7 +167,7 @@ class Cell(ttk.Button):
 
     def show_mine_error(self):
         self.style.configure("Mine.TButton", background="red")
-        self.config(style="Mine.TButton", text="mine")
+        self.config(style="Mine.TButton", text="💣")
 
     def right_click(self, event):
         print("right click")
@@ -130,10 +185,11 @@ class Cell(ttk.Button):
         return cell_return
 
     @classmethod
-    def randomize(cls, size=9):
+    def randomize(cls, size):
         cells = sample(cls.all, size)
         for cell in cells:
             cell.is_mine = True
 
 
 Window(900, 600, "mine game")
+
