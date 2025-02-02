@@ -3,6 +3,22 @@ from tkinter import  ttk
 from random import sample
 
 
+# class Window(tk.Tk):
+#     def __init__(self, width, height, title):
+#         super().__init__()
+#         self.geometry(f"{width}x{height}")
+#         self.title(title)
+#         self.resizable(False, False)
+#         self.style = ttk.Style()
+#         # data
+#         self.exploded_mines=tk.IntVar()
+#         self.mine_size=tk.IntVar(value=6)
+#         top_frame=TopFrame(self, self.style,self.mine_size)
+#         SideFrame(self, self.style,self.mine_size,self.exploded_mines)
+#         center_frame = CenterFrame(self, self.style, self.mine_size,self.exploded_mines)
+#         top_frame.set_start_game(center_frame.add_cells)
+#         self.mainloop()
+
 class Window(tk.Tk):
     def __init__(self, width, height, title):
         super().__init__()
@@ -10,23 +26,34 @@ class Window(tk.Tk):
         self.title(title)
         self.resizable(False, False)
         self.style = ttk.Style()
-        # data
-        self.exploded_mines=tk.IntVar()
-        self.mine_size=tk.IntVar(value=6)
-        top_frame=TopFrame(self, self.style,self.mine_size)
-        SideFrame(self, self.style,self.mine_size,self.exploded_mines)
-        center_frame = CenterFrame(self, self.style, self.mine_size,self.exploded_mines)
-        top_frame.set_start_game(center_frame.add_cells)
-        self.mainloop()
 
+        # Data
+        self.exploded_mines = tk.IntVar()
+        self.mine_size = tk.IntVar(value=6)
+        self.grid_size_var = tk.IntVar(value=5)  # Variable for grid size
+
+        # Frames
+        top_frame = TopFrame(self, self.style, self.mine_size)
+        SideFrame(self, self.style, self.mine_size, self.exploded_mines)
+        center_frame = CenterFrame(
+            self, self.style, self.mine_size, self.exploded_mines
+        )
+
+        # Link top frame to center frame
+        top_frame.set_start_game(center_frame.add_cells)
+
+        self.mainloop()
 
 class TopFrame(ttk.Frame):
     def __init__(self, master, style, mine_var):
         style.configure("Top.TFrame", background="#2c3e50")  # Dark blue background
         super().__init__(master, style="Top.TFrame")
-        self.mine_var=mine_var
+        self.mine_var = mine_var
+
         # Label for the slider
-        self.text_var=tk.StringVar(value=f'Adjust the number of mines { mine_var.get()} available')
+        self.text_var = tk.StringVar(
+            value=f"Adjust the number of mines {mine_var.get()} available"
+        )
         ttk.Label(
             self,
             textvariable=self.text_var,
@@ -46,9 +73,20 @@ class TopFrame(ttk.Frame):
             command=self.reset_mine,  # Callback when the slider is moved
         )
         self.slider.place(
-            relx=.4,rely=.8,relwidth=.3
+            relx=0.4, rely=0.8, relwidth=0.3
         )  # Add padding and fill horizontally
-        mine_var.trace_add("write", lambda *args: self.text_var.set(f"There are {mine_var.get()} mines"))
+        mine_var.trace_add(
+            "write",
+            lambda *args: self.text_var.set(f"There are {mine_var.get()} mines"),
+        )
+
+        # Reset button
+        self.reset_button = ttk.Button(
+            self,
+            text="Reset Game",
+            command=self.reset_game,
+        )
+        self.reset_button.place(relx=0.8, rely=.5, relwidth=0.2)
 
         # Place the frame
         self.place(x=0, y=0, relwidth=1, relheight=0.2)
@@ -58,8 +96,10 @@ class TopFrame(ttk.Frame):
         self.start_func = func
 
     def reset_mine(self, *args):
-        # self.text_var.set()
-        print(self.mine_var.get())
+        if self.start_func is not None:
+            self.start_func()
+
+    def reset_game(self):
         if self.start_func is not None:
             self.start_func()
 
@@ -99,6 +139,7 @@ class CenterFrame(ttk.Frame):
                 cell = Cell(self, col, row, self.style,self. exploded_mines)
                 cell.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
         Cell.randomize(self.mine_var.get())
+
 
 
 class Cell(ttk.Button):
