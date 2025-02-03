@@ -22,9 +22,7 @@ class Window(tk.Tk):
         # Frames
         top_frame = TopFrame(self, self.style, self.mine_size)
         self.side_frame=SideFrame(self, self.style, self.mine_size, self.exploded_mines,self.grid_size_var)
-        self.center_frame = CenterFrame(
-            self, self.style, self.mine_size, self.exploded_mines,self.grid_size_var,self.opened_cell
-        )
+        self.center_frame = CenterFrame(self, self.style, self.mine_size, self.exploded_mines,self.grid_size_var,self.opened_cell)
 
         # Link top frame to center frame
         top_frame.set_start_game(self.center_frame.add_cells)
@@ -33,10 +31,6 @@ class Window(tk.Tk):
         self.mainloop()
     
     def check_win(self):
-        # if self.opened_cell.get() + self.mine_size.get() > self.grid_size_var.get() **2:
-        #     return True
-        # return False
-        print(self.opened_cell.get())
         if self.grid_size_var.get()**2 - self.mine_size.get() <= self.opened_cell.get():
             return True
         return False
