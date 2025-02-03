@@ -1,7 +1,8 @@
 from tkinter import ttk
 from Cell import Cell
 class CenterFrame(ttk.Frame):
-    def __init__(self, master, style, mine_var, exploded_mines,gride_size):
+    def __init__(self, master, style, mine_var, exploded_mines,gride_size,opened_cell):
+        self.opened_cell=opened_cell
         self.style = style
         self.exploded_mines = exploded_mines
         self.mine_var = mine_var
@@ -12,10 +13,6 @@ class CenterFrame(ttk.Frame):
         self.add_cells()
 
     def add_cells(self):
-        for widget in self.winfo_children():
-            widget.destroy()
-
-
         Cell.all = []
         for i in range(self.grid_size.get()):
             self.columnconfigure(i, weight=1, uniform="a")
@@ -23,6 +20,6 @@ class CenterFrame(ttk.Frame):
         self.exploded_mines.set(value=0)
         for row in range(self.grid_size.get()):
             for col in range(self.grid_size.get()):
-                cell = Cell(self, col, row, self.style, self.exploded_mines)
+                cell = Cell(self, col, row, self.style, self.exploded_mines,self.opened_cell)
                 cell.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
         Cell.randomize(self.mine_var.get())

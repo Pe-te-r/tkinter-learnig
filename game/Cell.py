@@ -3,11 +3,12 @@ from random import sample
 class Cell(ttk.Button):
     all = []
 
-    def __init__(self, master, col, row, style, exploded_mines, is_mine=False):
+    def __init__(self, master, col, row, style, exploded_mines,opened_cell, is_mine=False):
         super().__init__(master=master)
         self.col = col
         self.row = row
         self.style = style
+        self.opened_cell=opened_cell
         self.exploded_mines = exploded_mines
         self.is_clicked = False
         self.is_mine = is_mine
@@ -35,11 +36,14 @@ class Cell(ttk.Button):
                     for cell in cells:
                         cell.show_cell()
             self.is_clicked = True
+            if self.master.master.check_win() or self.master.master.game_over():
+                print('game over')
 
     def show_cell(self):
+        print(self.opened_cell.get())
+        self.opened_cell.set(int(self.opened_cell.get()+1))
         _ = self.get_neighbour_cell
         counter = self.mine_cell_number
-        self.config(text=counter)
         self.style.configure("Pass.TButton", background="green")
         self.config(style="Pass.TButton", text=f"{counter}")
 
