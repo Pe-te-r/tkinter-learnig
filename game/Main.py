@@ -16,18 +16,19 @@ class Window(tk.Tk):
         # Data
         self.exploded_mines = tk.IntVar()
         self.mine_size = tk.IntVar(value=6)
-        self.grid_size_var = tk.IntVar(value=5)  # Variable for grid size
+        self.grid_size_var = tk.IntVar(value=5)  
 
         # Frames
         top_frame = TopFrame(self, self.style, self.mine_size)
-        SideFrame(self, self.style, self.mine_size, self.exploded_mines)
+        side_frame=SideFrame(self, self.style, self.mine_size, self.exploded_mines,self.grid_size_var)
         center_frame = CenterFrame(
-            self, self.style, self.mine_size, self.exploded_mines
+            self, self.style, self.mine_size, self.exploded_mines,self.grid_size_var
         )
 
         # Link top frame to center frame
         top_frame.set_start_game(center_frame.add_cells)
+        side_frame.set_start_game(center_frame.add_cells)
 
         self.mainloop()
 
-Window(1200,700,'minescapper')
+Window(1200,800,'minescapper')

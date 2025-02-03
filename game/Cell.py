@@ -40,6 +40,8 @@ class Cell(ttk.Button):
         _ = self.get_neighbour_cell
         counter = self.mine_cell_number
         self.config(text=counter)
+        self.style.configure("Pass.TButton", background="green")
+        self.config(style="Pass.TButton", text=f"{counter}")
 
     @property
     def mine_cell_number(self):
